@@ -1,0 +1,24 @@
+{
+    "name": "vs/units-battle",
+    "description": "PHP unites battle engine basic structure",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Varazdat Stepanyan",
+            "email": "developervaryan@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "VS\\DIContainer\\": "./src"
+        },
+        "files": [
+            "./src/helpers.php"
+        ]
+    }
+}
