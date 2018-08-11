@@ -78,6 +78,15 @@ class DIContainer implements DIContainerInterface
 
     /**
      * @param string $className
+     * @return bool
+     */
+    public function has(string $className): bool
+    {
+        return !empty(static::$classToAlias[$className]) || !empty(static::$classToFactory[$className]);
+    }
+
+    /**
+     * @param string $className
      * @param mixed ...$params
      * @return object
      * @throws InjectorException

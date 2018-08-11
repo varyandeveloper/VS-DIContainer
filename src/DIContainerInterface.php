@@ -38,6 +38,12 @@ interface DIContainerInterface
     public function get(string $class, ...$params): object;
 
     /**
+     * @param string $class
+     * @return bool
+     */
+    public function has(string $class): bool;
+
+    /**
      * @param string $className
      * @return object
      */
