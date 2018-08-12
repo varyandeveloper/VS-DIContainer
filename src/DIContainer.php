@@ -71,7 +71,7 @@ class DIContainer implements DIContainerInterface
      */
     public function registerAlias(string $className, string $alias): DIContainer
     {
-        static::$classToAlias[$className] = $alias;
+        static::$classToAlias[$alias] = $className;
         class_alias($className, $alias);
         return $this;
     }
