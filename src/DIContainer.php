@@ -2,6 +2,7 @@
 
 namespace VS\DIContainer;
 
+use VS\DIContainer\Configuration\ConfigurationInterface;
 use VS\DIContainer\Injector\{
     Injector, InjectorException
 };
@@ -24,6 +25,30 @@ class DIContainer implements DIContainerInterface
      * @var array
      */
     protected static $singletonState    = [];
+    /**
+     * @var array
+     */
+    protected static $factoryToConfig   = [];
+
+    /**
+     * @param string $className
+     * @param ConfigurationInterface $config
+     * @return DIContainerInterface
+     */
+    public function registerConfig(string $className, ConfigurationInterface $config): DIContainerInterface
+    {
+        self::$factoryToConfig[$className] = $config;
+        return $this;
+    }
+
+    /**
+     * @param string $className
+     * @return ConfigurationInterface
+     */
+    public function getConfig(string $className): ConfigurationInterface
+    {
+        return self::$factoryToConfig[$className];
+    }
 
     /**
      * @param string $className
@@ -31,7 +56,7 @@ class DIContainer implements DIContainerInterface
      * @param null|string $alias
      * @return DIContainer
      */
-    public function register(string $className, ?string $factoryClass = null, ?string $alias = null): DIContainer
+    public function register(string $className, ?string $factoryClass = null, ?string $alias = null): DIContainerInterface
     {
         if (null === $factoryClass && null === $alias) {
             trigger_error(
@@ -58,7 +83,7 @@ class DIContainer implements DIContainerInterface
      * @param string $factoryClass
      * @return DIContainer
      */
-    public function registerFactory(string $className, string $factoryClass): DIContainer
+    public function registerFactory(string $className, string $factoryClass): DIContainerInterface
     {
         static::$classToFactory[$className] = $factoryClass;
         return $this;
@@ -69,7 +94,7 @@ class DIContainer implements DIContainerInterface
      * @param string $alias
      * @return DIContainer
      */
-    public function registerAlias(string $className, string $alias): DIContainer
+    public function registerAlias(string $className, string $alias): DIContainerInterface
     {
         static::$classToAlias[$alias] = $className;
         class_alias($className, $alias);
