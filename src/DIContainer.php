@@ -126,7 +126,7 @@ class DIContainer implements DIContainerInterface
             $className = static::$classToFactory[$className];
             $this->validateClass($className);
             $object = new $className;
-            return $object($this, $params);
+            return $object($this, ...$params);
         } else {
             $this->validateClass($className);
             return Injector::injectClass($className, ...$params);

@@ -11,7 +11,7 @@ trait ConfigurationTrait
     /**
      * @var array
      */
-    protected $config;
+    protected $config = [];
 
     /**
      * @return array

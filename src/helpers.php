@@ -13,10 +13,11 @@ const INJECTOR_INJECT_FUNCTION  = 3;
 if (!function_exists('container')) {
     /**
      * @param string|null $className
-     * @return object|DIContainer
+     * @param mixed ...$params
+     * @return object|DIContainerInterface
      * @throws InjectorException
      */
-    function container(string $className = null): object
+    function container(string $className = null, ...$params): object
     {
         static $container;
 
@@ -24,7 +25,7 @@ if (!function_exists('container')) {
             $container = new DIContainer;
         }
 
-        return null !== $className ? $container->get($className) : $container;
+        return null !== $className ? $container->get($className, ...$params) : $container;
     }
 }
 
