@@ -2,6 +2,8 @@
 
 namespace VS\DIContainer\Injector;
 
+use VS\DIContainer\DIContainer;
+
 /**
  * Class Injector
  * @package VS\DIContainer\Injector
@@ -105,7 +107,10 @@ class Injector implements InjectorInterface
             }
 
             if ($reflectionParameter->getClass()) {
-                $returnParams[] = static::injectClass($reflectionParameter->getClass()->getName());
+                $className = $reflectionParameter->getClass()->getName();
+                $returnParams[] = self::getContainer()->has($className)
+                    ? self::getContainer()->get($className)
+                    : static::injectClass($className);
             } elseif (!empty($params[$i])) {
                 $returnParams[] = $params[$i];
                 $i++;
@@ -113,5 +118,18 @@ class Injector implements InjectorInterface
         }
 
         return $returnParams;
+    }
+
+    /**
+     * @return DIContainer
+     */
+    protected static function getContainer(): DIContainer
+    {
+        static $container;
+        if (!$container) {
+            $container = new DIContainer;
+        }
+
+        return $container;
     }
 }
