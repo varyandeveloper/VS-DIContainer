@@ -1,6 +1,6 @@
 {
-    "name": "vs/units-battle",
-    "description": "PHP unites battle engine basic structure",
+    "name": "vs/di-container",
+    "description": "PHP container with nested dependency injection",
     "type": "project",
     "license": "MIT",
     "authors": [
