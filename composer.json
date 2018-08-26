@@ -1,6 +1,7 @@
 {
     "name": "vs/di-container",
     "description": "PHP container with nested dependency injection",
+    "homepage": "https://github.com/varyandeveloper/vs-DIContainer",
     "type": "project",
     "license": "MIT",
     "authors": [
