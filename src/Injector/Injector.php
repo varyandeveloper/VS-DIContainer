@@ -98,20 +98,17 @@ class Injector implements InjectorInterface
         }
 
         foreach ($paramsToInject as $reflectionParameter) {
-            if ($reflectionParameter->isOptional()) {
-                if (!empty($params[$i])) {
-                    $returnParams[] = $params[$i];
-                    $i++;
-                }
-                continue;
-            }
-
             if ($reflectionParameter->getClass()) {
                 $className = $reflectionParameter->getClass()->getName();
-                $returnParams[] = self::getContainer()->has($className)
-                    ? self::getContainer()->get($className)
-                    : static::injectClass($className);
-            } elseif (!empty($params[$i])) {
+                if (isset($params[$i]) && $params[$i] instanceof $className) {
+                    $returnParams[] = $params[$i];
+                    $i++;
+                } else {
+                    $returnParams[] = self::getContainer()->has($className)
+                        ? self::getContainer()->get($className)
+                        : static::injectClass($className);
+                }
+            } elseif (array_key_exists($i, $params)) {
                 $returnParams[] = $params[$i];
                 $i++;
             }
