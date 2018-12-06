@@ -37,7 +37,7 @@ class Injector implements InjectorInterface
     }
 
     /**
-     * @param string|object $class
+     * @param object|string $class
      * @param string $methodName
      * @param mixed ...$params
      * @return mixed
@@ -64,7 +64,7 @@ class Injector implements InjectorInterface
     }
 
     /**
-     * @param $function
+     * @param callable|\Closure|string $function
      * @param mixed ...$params
      * @return mixed
      * @throws InjectorException
@@ -86,6 +86,7 @@ class Injector implements InjectorInterface
      * @param array $params
      * @return array
      * @throws InjectorException
+     * @throws \ReflectionException
      */
     public static function getMergedPassedParamsAndInjectableParams(\ReflectionFunctionAbstract $functionAbstract, array $params): array
     {

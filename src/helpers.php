@@ -14,7 +14,7 @@ if (!function_exists('container')) {
     /**
      * @param string|null $className
      * @param mixed ...$params
-     * @return object|DIContainerInterface
+     * @return object
      * @throws InjectorException
      */
     function container(string $className = null, ...$params): object

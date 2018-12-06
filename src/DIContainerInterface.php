@@ -25,9 +25,9 @@ interface DIContainerInterface
 
     /**
      * @param string $className
-     * @param null|string $factoryClass
-     * @param null|string $alias
-     * @return DIContainer
+     * @param string|null $factoryClass
+     * @param string|null $alias
+     * @return mixed
      */
     public function register(string $className, ?string $factoryClass = null, ?string $alias = null);
 

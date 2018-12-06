@@ -16,7 +16,7 @@ interface InjectorInterface
     public static function injectClass(string $className, ...$params): object;
 
     /**
-     * @param string|object $class
+     * @param $class
      * @param string $methodName
      * @param mixed ...$params
      * @return mixed

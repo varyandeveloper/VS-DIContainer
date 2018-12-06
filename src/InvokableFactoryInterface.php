@@ -10,8 +10,9 @@ interface InvokableFactoryInterface
 {
     /**
      * @param DIContainerInterface $factory
+     * @param string $className
      * @param array $params
      * @return mixed
      */
-    public function __invoke(DIContainerInterface $factory, array $params = []);
+    public function __invoke(DIContainerInterface $factory, string $className, array $params = []);
 }

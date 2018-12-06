@@ -13,22 +13,17 @@ use VS\DIContainer\Injector\{
  */
 class DIContainer implements DIContainerInterface
 {
-    /**
-     * @var array
-     */
-    protected static $classToFactory    = [];
-    /**
-     * @var array
-     */
-    protected static $classToAlias      = [];
-    /**
-     * @var array
-     */
-    protected static $singletonState    = [];
-    /**
-     * @var array
-     */
-    protected static $factoryToConfig   = [];
+    protected const MAX_PARENTS_FOR_ABSTRACT_FACTORY_CHILDREN = 5;
+
+    protected static $abstractFactories = [];
+
+    protected static $classToFactory = [];
+
+    protected static $classToAlias = [];
+
+    protected static $singletonState = [];
+
+    protected static $factoryToConfig = [];
 
     /**
      * @param string $className
@@ -52,26 +47,26 @@ class DIContainer implements DIContainerInterface
 
     /**
      * @param string $className
-     * @param null|string $factoryClass
-     * @param null|string $alias
-     * @return DIContainer
+     * @param string|null $factoryClass
+     * @param string|null $alias
+     * @return DIContainerInterface
+     * @throws \ReflectionException
      */
     public function register(string $className, ?string $factoryClass = null, ?string $alias = null): DIContainerInterface
     {
-        if (null === $factoryClass && null === $alias) {
+        if (!$factoryClass && !$alias) {
             trigger_error(
                 'Using register method without factory and alias dose not have an effect',
                 E_USER_WARNING
             );
-
             return $this;
         }
 
-        if (null !== $factoryClass) {
+        if ($factoryClass) {
             $this->registerFactory($className, $factoryClass);
         }
 
-        if (null !== $alias) {
+        if ($alias) {
             $this->registerAlias($className, $alias);
         }
 
@@ -81,11 +76,17 @@ class DIContainer implements DIContainerInterface
     /**
      * @param string $className
      * @param string $factoryClass
-     * @return DIContainer
+     * @return DIContainerInterface
+     * @throws \ReflectionException
      */
     public function registerFactory(string $className, string $factoryClass): DIContainerInterface
     {
-        static::$classToFactory[$className] = $factoryClass;
+        $reflection = new \ReflectionClass($className);
+        if ($reflection->isAbstract()) {
+            self::$abstractFactories[$className] = $factoryClass;
+        } else {
+            static::$classToFactory[$className] = $factoryClass;
+        }
         return $this;
     }
 
@@ -104,10 +105,14 @@ class DIContainer implements DIContainerInterface
     /**
      * @param string $className
      * @return bool
+     * @throws \ReflectionException
      */
     public function has(string $className): bool
     {
-        return !empty(static::$classToAlias[$className]) || !empty(static::$classToFactory[$className]);
+        return
+            !empty(static::$classToAlias[$className]) ||
+            !empty(static::$classToFactory[$className] ||
+            $this->findTopParentByHierarchy($className));
     }
 
     /**
@@ -115,6 +120,7 @@ class DIContainer implements DIContainerInterface
      * @param mixed ...$params
      * @return object
      * @throws InjectorException
+     * @throws \ReflectionException
      */
     public function get(string $className, ...$params): object
     {
@@ -123,11 +129,19 @@ class DIContainer implements DIContainerInterface
         }
 
         if (!empty(static::$classToFactory[$className])) {
-            $className = static::$classToFactory[$className];
-            $this->validateClass($className);
-            $object = new $className;
-            return $object($this, ...$params);
+            $factory = static::$classToFactory[$className];
+            $this->validateClass($factory);
+            $object = new $factory;
+            return $object($this, $className, ...$params);
         } else {
+
+            $factory = $this->findTopParentByHierarchy($className);
+
+            if ($factory) {
+                $this->registerFactory($className, $factory);
+                return $this->get($className);
+            }
+
             $this->validateClass($className);
             return Injector::injectClass($className, ...$params);
         }
@@ -137,6 +151,7 @@ class DIContainer implements DIContainerInterface
      * @param string $className
      * @return object
      * @throws InjectorException
+     * @throws \ReflectionException
      */
     public function getSingleton(string $className): object
     {
@@ -149,8 +164,22 @@ class DIContainer implements DIContainerInterface
 
     /**
      * @param string $className
+     * @return string|null
+     * @throws \ReflectionException
      */
-    protected function validateClass(string $className)
+    protected function findTopParentByHierarchy(string $className): ?string
+    {
+        $reflection = new \ReflectionClass($className);
+        $i = static::MAX_PARENTS_FOR_ABSTRACT_FACTORY_CHILDREN;
+
+        while ($reflection->getParentClass() && $i--) {
+            $reflection = $reflection->getParentClass();
+        }
+
+        return self::$abstractFactories[$reflection->getName()] ?? null;
+    }
+
+    protected function validateClass(string $className): void
     {
         if (!class_exists($className)) {
             throw new DIContainerException('Class factory ' . $className . ' dose not exists');
