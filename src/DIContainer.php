@@ -111,8 +111,8 @@ class DIContainer implements DIContainerInterface
     {
         return
             !empty(static::$classToAlias[$className]) ||
-            !empty(static::$classToFactory[$className] ||
-            $this->findTopParentByHierarchy($className));
+            !empty(static::$classToFactory[$className]) ||
+            $this->findTopParentByHierarchy($className);
     }
 
     /**
