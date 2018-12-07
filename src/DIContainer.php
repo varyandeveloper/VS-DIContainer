@@ -132,14 +132,14 @@ class DIContainer implements DIContainerInterface
             $factory = static::$classToFactory[$className];
             $this->validateClass($factory);
             $object = new $factory;
-            return $object($this, $className, ...$params);
+            return $object($this, $className, $params);
         } else {
 
             $factory = $this->findTopParentByHierarchy($className);
 
             if ($factory) {
                 $this->registerFactory($className, $factory);
-                return $this->get($className);
+                return $this->get($className, ...$params);
             }
 
             $this->validateClass($className);
