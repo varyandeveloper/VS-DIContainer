@@ -172,7 +172,7 @@ class DIContainer implements DIContainerInterface
         $reflection = new \ReflectionClass($className);
         $i = static::MAX_PARENTS_FOR_ABSTRACT_FACTORY_CHILDREN;
 
-        while ($reflection->getParentClass() && $i--) {
+        while ($reflection->getParentClass() && $i-- && !$reflection->isAbstract()) {
             $reflection = $reflection->getParentClass();
         }
 
