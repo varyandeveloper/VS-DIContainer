@@ -82,7 +82,7 @@ class DIContainer implements DIContainerInterface
     public function registerFactory(string $className, string $factoryClass): DIContainerInterface
     {
         $reflection = new \ReflectionClass($className);
-        if ($reflection->isAbstract()) {
+        if ($reflection->isAbstract() && !$reflection->isInterface()) {
             self::$abstractFactories[$className] = $factoryClass;
         } else {
             static::$classToFactory[$className] = $factoryClass;
